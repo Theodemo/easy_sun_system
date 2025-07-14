@@ -1,0 +1,12 @@
+[Unit]
+Description=Easy Sun System
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/theo/Documents/EasySunSystem
+Environment=PYTHONPATH=/home/theo/.local/lib/python3.9/site-packages
+ExecStart=/usr/bin/python3 /home/theo/Documents/EasySunSystem/app_l.py
+
+[Install]
+WantedBy=multi-user.target

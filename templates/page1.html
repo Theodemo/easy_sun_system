@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- Auteur : Théo de Morais -->
+<!-- Date : 10 août 2023 -->
+<html>
+<head>
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <style>
+        body {
+            background-color: #21242C;
+        }
+        
+        .general-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -150%);
+        }
+        
+        .text-container {
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        
+        
+        .position {
+            transform: translate(-100%, -20%);
+        }
+        
+        .color1 {
+            background-color: #21242C;
+            margin-bottom: -14px;
+            width: 400px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .color2 {
+            background-color: #252935;
+            margin-bottom: -14px;
+            width: 400px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .espaces {
+            margin-left: 80px;
+        }
+
+    </style>
+<script>
+function updateValues() {
+    $.ajax({
+        url: '/update',
+        type: 'GET',
+        dataType: 'json',
+        success: function(registers) {
+            $('#pvv .espaces').text(registers[0] + ' V');
+            $('#chargw .espaces').text(registers[1] + ' W');
+            $('#batv .espaces').text(registers[2] + ' V');
+            $('#loadw .espaces').text(registers[3] + ' W');
+            $('#loadpcent .espaces').text(registers[4] + ' %');
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching registers:", error);
+        }
+    });
+}
+
+
+updateValues();
+
+
+setInterval(updateValues, 30000);
+</script>
+
+</head>
+<body>
+    <img src="{{ url_for('static', filename='general2.png') }}" class="general-image">
+
+    <div class="text-container position">
+<p id="pvv" class="color2">Tension des panneaux solaires <span class="espaces">Chargement</span></p>
+<p id="chargw" class="color1">Puissance fournie par les panneaux <span class="espaces">Chargement</span></p>
+<p id="batv" class="color2">Tension des batteries <span class="espaces">Chargement</span></p>
+<p id="loadw" class="color1">Puissance fournie instantanée en W <span class="espaces">Chargement</span></p>
+<p id="loadpcent" class="color2">Puissance fournie instantanée en % <span class="espaces">Chargement</span></p>
+
+    </div>
+</body>
+</html>

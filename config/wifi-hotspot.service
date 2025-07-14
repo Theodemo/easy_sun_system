@@ -1,0 +1,12 @@
+[Unit]
+Description=Wi-Fi Hotspot Service
+After=network.target
+
+[Service]
+ExecStartPre=/usr/sbin/service dnsmasq restart
+ExecStart=/usr/sbin/service hostapd restart
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

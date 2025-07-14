@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!-- Auteur : Théo de Morais -->
+<!-- Date : 10 août 2023 -->
+<html>
+<head>
+    <title>EasySunSystem Monitoring</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 110vh;
+        }
+
+
+        .sidebar {
+            background-color: #21242C;
+            flex: 0 0 5%; 
+            min-height: 50px; 
+            padding: 10px 0; 
+            display: flex; 
+        }
+
+
+        ul {
+            list-style-type: none; 
+            padding: 0;
+            display: flex;
+        }
+
+
+        li {
+            margin-right: 100px;
+        }
+
+
+        li:last-child {
+            margin-right: 0;
+        }
+
+
+        li:first-child {
+            border-top: none;
+        }
+
+
+        a {
+            color: #666E7A;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            padding: 10px;
+            position: relative;
+        }
+
+
+        a:hover,
+        a.active {
+            color: #fff;
+            background-image: linear-gradient(45deg, #FFD230, #002DCF);
+            background-size: 100% 1px;
+            background-position: 0 100%;
+            background-repeat: no-repeat;
+        }
+
+        .content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+
+        .content-inner {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none; 
+        }
+
+        .logo-image {
+            width: 70px;
+            height: auto;
+            margin-left: auto; 
+        }
+.logo-container {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    padding-left: 10px;
+    border-left: 1px solid #666E7A; 
+}
+
+.logo-text {
+    color: #666E7A;
+    font-size: 16px; 
+    margin-left: 10px;
+    margin-right: 10px;
+}
+    </style>
+    <script>
+
+        function setActiveLink(link) {
+
+            const links = document.querySelectorAll(".sidebar a");
+            links.forEach((el) => el.classList.remove("active"));
+
+
+            link.classList.add("active");
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const links = document.querySelectorAll(".sidebar a");
+            links.forEach((link) => {
+                link.addEventListener("click", function() {
+                    setActiveLink(this);
+                });
+            });
+
+
+            const defaultLink = document.querySelector(".sidebar a.active");
+            if (!defaultLink) {
+                const page1Link = document.querySelector(".sidebar a[href='/page1']");
+                if (page1Link) {
+                    setActiveLink(page1Link);
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+<div class="sidebar">
+    <ul>
+        <li><a href="/page1" target="content_frame">Données en temps réel</a></li>
+        <li><a href="/page2" target="content_frame">Historique</a></li>
+        <li><a href="/page3" target="content_frame">Paramètres</a></li>
+    </ul>
+    <div class="logo-container">
+        <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <p class="logo-text">EasySunSystem</p>
+    </div>
+</div>
+
+    <div class="content">
+        <iframe name="content_frame" src="/page1" frameborder="0" width="100%" height="100%"></iframe>
+    </div>
+</body>
+</html>
