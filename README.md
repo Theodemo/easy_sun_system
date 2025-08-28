@@ -1,5 +1,7 @@
 # EasySunSystem 🌞
 
+## 🚀 Overview
+
 This project provides **access to the production data of an EasySunSystem solar power plant** via a **Wi-Fi web interface**.  
 The system runs on a **Raspberry Pi** connected to the inverter through Modbus (RS485) and serves a local web page accessible from any browser.
 
@@ -133,3 +135,5 @@ nohook wpa_supplicant
 
 Author: **Théo de Morais**  
 Creation date: **August 10, 2023**
+
+## 🌟 License
