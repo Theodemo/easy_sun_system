@@ -11,9 +11,9 @@ The system runs on a **Raspberry Pi** connected to the inverter through Modbus (
 
 Monitoring page for production, consumption, and system settings:
 
-![Production](page_1.png)  
-![Consumption](page_2.png)  
-![Configuration](page_3.png)
+![alt text](assets/img/production.png)
+![alt text](assets/img/consumtion.png)
+![alt text](assets/img/main.png)
 
 ---
 
