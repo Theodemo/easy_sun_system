@@ -1,139 +1,216 @@
-# EasySunSystem 🌞
+# EasySunSystem
 
-## 🚀 Overview
+Monitoring d'une centrale solaire EasySunSystem via une interface web sur Raspberry Pi.
 
-This project provides **access to the production data of an EasySunSystem solar power plant** via a **Wi-Fi web interface**.  
-The system runs on a **Raspberry Pi** connected to the inverter through Modbus (RS485) and serves a local web page accessible from any browser.
+Le systeme lit les donnees de l'onduleur en Modbus (RS485), les stocke en SQLite, et sert une interface web accessible depuis n'importe quel navigateur.
 
----
-
-## 📸 Web Interface Overview
-
-Monitoring page for production, consumption, and system settings:
-
-![alt text](assets/img/production.png)
-![alt text](assets/img/consumtion.png)
-![alt text](assets/img/main.png)
+![Production](assets/img/production.png)
+![Consommation](assets/img/consumtion.png)
+![Interface](assets/img/main.png)
 
 ---
 
-## ⚙️ Raspberry Pi Configuration
+## Demarrage rapide (sans materiel)
 
-### 1. Auto-start the Application
-
-Create the following file:  
-`/etc/systemd/system/easy_sun.service`
-
-```ini
-[Unit]
-Description=Easy Sun System
-After=multi-user.target
-
-[Service]
-Type=idle
-Environment=PYTHONPATH=/home/easysun/.local/lib/python3.9/site-packages
-ExecStart=/usr/bin/python3 /home/easy/Documents/EasySunSystem/app_l.py
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**Useful commands:**
+Le mode simulation permet de tester l'application sans etre connecte a une centrale :
 
 ```bash
-sudo systemctl enable easy_sun.service      # Enable on startup
-sudo systemctl start easy_sun.service       # Start the service now
-sudo systemctl status easy_sun.service      # Check the status
-sudo systemctl stop easy_sun.service        # Stop the service
-sudo systemctl daemon-reload                # Reload services
+# Installer les dependances
+pip install -r requirements.txt
+
+# Lancer en mode simulation
+python app.py --simulate -p 5000
+```
+
+Ouvrir http://localhost:5000 dans le navigateur. 3 jours de donnees simulees sont pre-generees au demarrage (courbe solaire realiste, consommation variable, charge/decharge batterie).
+
+Options :
+```bash
+python app.py --simulate -p 5000     # Mode simulation, port 5000 (dev local)
+python app.py --simulate             # Mode simulation, port 80 (necessite sudo)
+python app.py                        # Mode reel (Raspberry Pi, connexion Modbus)
 ```
 
 ---
 
-## 📡 Wi-Fi Hotspot Configuration
+## Installation sur Raspberry Pi
 
-### 1. Auto-start the Hotspot Service
+### Materiel necessaire
 
-Create the following file:  
-`/etc/systemd/system/wifi-hotspot.service`
+- Raspberry Pi 3B+ ou plus recent (WiFi integre)
+- Adaptateur USB vers RS485
+- Cable RS485 vers l'onduleur
+- Alimentation Raspberry Pi
+- Carte microSD (8 Go minimum)
 
-```ini
-[Unit]
-Description=Wi-Fi Hotspot Service
-After=network.target
+### Etape 1 : Preparer la carte SD
 
-[Service]
-ExecStartPre=/usr/sbin/service dnsmasq restart
-ExecStart=/usr/sbin/service hostapd restart
-Type=oneshot
-RemainAfterExit=yes
+1. Telecharger [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+2. Flasher **Raspberry Pi OS Lite (64-bit)** sur la carte SD
+3. Dans les parametres avances de l'imager, activer le SSH et configurer un mot de passe
 
-[Install]
-WantedBy=multi-user.target
-```
+### Etape 2 : Installer le projet
 
-Enable the service:
+Connecter le RPi en Ethernet (ou en SSH via le reseau local) puis :
 
 ```bash
-sudo systemctl enable wifi-hotspot.service
+# Cloner le projet
+git clone https://github.com/votre-repo/easy_sun_system.git
+cd easy_sun_system
+
+# Lancer l'installation automatique
+sudo bash setup_rpi.sh
 ```
 
-### 2. `hostapd.conf` Configuration
+Le script `setup_rpi.sh` fait tout automatiquement :
+- Met a jour le systeme
+- Installe hostapd, dnsmasq, et les dependances Python
+- Configure le hotspot WiFi (SSID: **EasySunSystem**)
+- Configure le portail captif (redirection automatique)
+- Active les services systemd pour le demarrage automatique
+- Redemarre le RPi
 
-```ini
-interface=wlan0
-ssid=MyWiFiHotspot
-hw_mode=g
-channel=7
-wpa=2
-wpa_passphrase=MyPassword
-wpa_key_mgmt=WPA-PSK
-address=192.168.4.1
-netmask=255.255.255.0
+### Etape 3 : Branchements
+
+1. Brancher l'adaptateur USB-RS485 sur le Raspberry Pi
+2. Connecter le cable RS485 entre l'adaptateur et le port Modbus de l'onduleur
+3. Alimenter le Raspberry Pi
+
+Le systeme demarre automatiquement.
+
+---
+
+## Premiere connexion
+
+### 1. Se connecter au WiFi de la centrale
+
+Depuis un telephone ou un ordinateur :
+
+| | |
+|---|---|
+| **Reseau WiFi** | `EasySunSystem` |
+| **Mot de passe** | `easysunsystem` |
+
+### 2. Acceder a l'interface
+
+Une popup **"Se connecter au reseau"** apparait automatiquement sur le telephone. Elle ouvre directement l'interface de monitoring.
+
+Si la popup n'apparait pas, ouvrir n'importe quel site dans le navigateur (ex: google.com). La redirection est automatique.
+
+En dernier recours, aller a : `http://192.168.0.254`
+
+### 3. Configurer le WiFi de la box (optionnel)
+
+Pour acceder a l'interface depuis votre reseau domestique :
+
+1. Aller dans l'onglet **Parametres**
+2. Entrer le nom et le mot de passe de votre box internet
+3. Cliquer sur **Configurer**
+4. Le Raspberry Pi se connectera a votre box au prochain redemarrage
+5. L'adresse IP sur votre reseau s'affichera dans la page Parametres
+
+---
+
+## Interface web
+
+### Temps reel
+
+Affiche les donnees en direct de la centrale :
+- Tension des panneaux solaires (V)
+- Puissance solaire (W)
+- Tension et charge batterie (V / %)
+- Puissance consommee (W)
+
+Les donnees se rafraichissent toutes les 30 secondes.
+
+### Historique
+
+Graphiques de production et consommation sur une periode choisie :
+- Selecteur de dates (debut / fin)
+- Zoom et navigation dans les graphiques
+- Total produit et consomme en kWh
+
+Les donnees sont enregistrees toutes les 3 minutes et conservees pendant 1 an.
+
+### Parametres
+
+- Configuration WiFi de la box internet
+- Mise a jour de la date et l'heure du systeme
+- Effacement des donnees historiques
+
+---
+
+## Architecture du projet
+
 ```
-
-### 3. `wpa_supplicant.conf` Configuration (to connect to an existing Wi-Fi network)
-
-```ini
-network={
-    ssid="NetworkName"
-    psk="NetworkPassword"
-}
-```
-
-### 4. `dhcpcd.conf` Configuration (static IP address for the hotspot)
-
-```ini
-interface=wlan0
-static ip_address=192.168.4.1/24
-nohook wpa_supplicant
+easy_sun_system/
+  app.py                    # Point d'entree (--simulate pour le mode simulation)
+  config.py                 # Configuration centralisee
+  setup_rpi.sh              # Script d'installation Raspberry Pi
+  requirements.txt          # Dependances Python
+  easysun/
+    __init__.py             # App factory Flask
+    routes/
+      pages.py              # Pages HTML (dashboard, historique, parametres)
+      api.py                # API JSON (donnees temps reel, graphiques)
+      system.py             # API systeme (WiFi, heure, donnees)
+    services/
+      reader.py             # Interface abstraite (reel / simulation)
+      modbus_service.py     # Communication Modbus RS485
+      simulator.py          # Simulation solaire realiste
+    database/
+      db.py                 # Gestion connexions SQLite
+      repository.py         # Sauvegarde, requetes, calcul energie
+    models/
+      registers.py          # Mapping des registres Modbus
+    utils/
+      validation.py         # Validation des entrees utilisateur
+      network.py            # Configuration WiFi, detection IP
+    tasks/
+      scheduler.py          # Taches de fond (sauvegarde, nettoyage)
+  templates/                # Templates HTML Jinja2
+  static/
+    css/main.css            # Styles (dark theme, responsive)
+    js/                     # JavaScript (vanilla, sans jQuery)
+    vendor/                 # Chart.js
+  config/                   # Fichiers de configuration Raspberry Pi
+  tests/                    # Tests unitaires (pytest)
 ```
 
 ---
 
-## 🌐 How to Connect to the Web Interface
+## Developpement
 
-### Step 1: Connect to the Plant’s Wi-Fi Network
+### Lancer les tests
 
-1. Open your device’s Wi-Fi settings.
-2. Look for the network named:  
-   **`CentraleEasySunSystem`**
-3. Enter the password:  
-   **`easysunsystem`**
+```bash
+python -m pytest tests/ -v
+```
+
+### Variables d'environnement
+
+| Variable | Description | Defaut |
+|----------|-------------|--------|
+| `EASYSUN_SIMULATION` | Mode simulation (`true`/`false`) | `false` |
+| `EASYSUN_MODBUS_PORT` | Port serie Modbus | `/dev/ttyUSB0` |
+| `EASYSUN_SLAVE_ADDR` | Adresse esclave Modbus | `4` |
+| `EASYSUN_BAUDRATE` | Vitesse Modbus | `19200` |
+| `EASYSUN_PORT` | Port du serveur web | `80` |
+| `EASYSUN_SAVE_INTERVAL` | Intervalle de sauvegarde (secondes) | `180` |
+| `EASYSUN_RETENTION_DAYS` | Duree de retention des donnees (jours) | `365` |
+
+### Commandes systemd utiles
+
+```bash
+sudo systemctl status easy_sun.service      # Statut de l'application
+sudo systemctl restart easy_sun.service     # Redemarrer l'application
+sudo systemctl stop easy_sun.service        # Arreter l'application
+journalctl -u easy_sun.service -f           # Voir les logs en direct
+```
 
 ---
 
-### Step 2: Access the Dashboard
+## Contact
 
-1. Open a web browser (Chrome, Firefox, etc.).
-2. Enter the following address in the URL bar:  
-   👉 [http://192.168.0.254:5000](http://192.168.0.254:5000)
-
----
-
-## 📬 Contact
-
-Author: **Théo de Morais**  
-Creation date: **August 10, 2023**
-
-## 🌟 License
+Auteur : **Theo de Morais**
+Creation : Aout 2023

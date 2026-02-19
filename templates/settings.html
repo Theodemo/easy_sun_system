@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Parametres{% endblock %}
+
+{% block content %}
+<div id="alert" class="alert"></div>
+
+<div class="form-section">
+    <h3>Acces Internet</h3>
+    <p class="status-text" id="connection-status">Verification de la connexion...</p>
+    <div class="form-group">
+        <label for="ssid">Nom de la box (SSID)</label>
+        <input type="text" id="ssid" required>
+    </div>
+    <div class="form-group">
+        <label for="wifi-password">Mot de passe</label>
+        <input type="password" id="wifi-password" required>
+    </div>
+    <button class="btn" onclick="configureWiFi()">Configurer</button>
+</div>
+
+<div class="form-section">
+    <h3>Date et heure</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="day">Jour</label>
+            <input type="number" id="day" min="1" max="31" required>
+        </div>
+        <div class="form-group">
+            <label for="month">Mois</label>
+            <input type="number" id="month" min="1" max="12" required>
+        </div>
+        <div class="form-group">
+            <label for="year">Annee</label>
+            <input type="number" id="year" min="2020" max="2100" required>
+        </div>
+        <div class="form-group">
+            <label for="hour">Heure</label>
+            <input type="number" id="hour" min="0" max="23" required>
+        </div>
+        <div class="form-group">
+            <label for="minute">Minute</label>
+            <input type="number" id="minute" min="0" max="59" required>
+        </div>
+        <div class="form-group">
+            <label for="second">Seconde</label>
+            <input type="number" id="second" min="0" max="59" required>
+        </div>
+    </div>
+    <button class="btn" onclick="updateDateTime()">Mettre a jour</button>
+</div>
+
+<div class="form-section">
+    <h3>Gestion des donnees</h3>
+    <button class="btn btn--danger" onclick="clearData()">Effacer toutes les donnees</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

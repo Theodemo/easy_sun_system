@@ -1,6 +1,5 @@
-waitress
-flask
-threading
-datime
-sqlite3
-minimalmodbus
+flask>=3.0
+waitress>=3.0
+minimalmodbus>=2.1
+pyserial>=3.5
+pytest>=7.0

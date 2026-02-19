@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Historique{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='vendor/chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/chartjs-plugin-zoom.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="date-range">
+    <div>
+        <label for="start_date">Du :</label>
+        <input type="date" id="start_date" required>
+        <input type="time" id="start_time" required>
+    </div>
+    <div>
+        <label for="end_date">Au :</label>
+        <input type="date" id="end_date" required>
+        <input type="time" id="end_time" required>
+    </div>
+    <button class="btn" onclick="updateCharts()">Afficher</button>
+</div>
+
+<div class="energy-summary">
+    <div class="energy-stat">
+        <span class="energy-stat__label">Total produit</span>
+        <span class="energy-stat__value" id="sum-chargw">--</span>
+        <span class="energy-stat__label"> kWh</span>
+    </div>
+    <div class="energy-stat">
+        <span class="energy-stat__label">Total consomme</span>
+        <span class="energy-stat__value" id="sum-loadw">--</span>
+        <span class="energy-stat__label"> kWh</span>
+    </div>
+</div>
+
+<div class="chart-wrapper">
+    <div class="chart-header">
+        <span class="chart-title">Production solaire (W)</span>
+        <div class="chart-nav-btns">
+            <button class="btn btn--small" id="moveLeft-chart1">&#8249;</button>
+            <button class="btn btn--small" id="moveRight-chart1">&#8250;</button>
+        </div>
+    </div>
+    <canvas id="chart1"></canvas>
+</div>
+
+<div class="chart-wrapper">
+    <div class="chart-header">
+        <span class="chart-title">Consommation instantanee (W)</span>
+        <div class="chart-nav-btns">
+            <button class="btn btn--small" id="moveLeft-chart2">&#8249;</button>
+            <button class="btn btn--small" id="moveRight-chart2">&#8250;</button>
+        </div>
+    </div>
+    <canvas id="chart2"></canvas>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

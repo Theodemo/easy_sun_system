@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Temps reel{% endblock %}
+
+{% block content %}
+<div class="schema-container">
+    <img src="{{ url_for('static', filename='img/shema_installation.png') }}" alt="Schema de l'installation" class="schema-image">
+</div>
+
+<div class="dashboard-grid" id="dashboard">
+    <div class="metric-card">
+        <span class="metric-card__label">Tension des panneaux solaires</span>
+        <span class="metric-card__value" id="pvv">--</span>
+        <span class="metric-card__unit">V</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-card__label">Puissance solaire</span>
+        <span class="metric-card__value" id="chargw">--</span>
+        <span class="metric-card__unit">W</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-card__label">Tension batterie</span>
+        <span class="metric-card__value" id="batv">--</span>
+        <span class="metric-card__unit">V</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-card__label">Charge batterie</span>
+        <span class="metric-card__value" id="batsoc">--</span>
+        <span class="metric-card__unit">%</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-card__label">Puissance consommee</span>
+        <span class="metric-card__value" id="loadw">--</span>
+        <span class="metric-card__unit">W</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-card__label">Charge en pourcentage</span>
+        <span class="metric-card__value" id="loadpcent">--</span>
+        <span class="metric-card__unit">%</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

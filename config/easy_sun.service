@@ -1,12 +1,13 @@
 [Unit]
-Description=Easy Sun System
-After=multi-user.target
+Description=EasySunSystem Monitoring
+After=multi-user.target network.target
 
 [Service]
 Type=idle
-WorkingDirectory=/home/theo/Documents/EasySunSystem
-Environment=PYTHONPATH=/home/theo/.local/lib/python3.9/site-packages
-ExecStart=/usr/bin/python3 /home/theo/Documents/EasySunSystem/app_l.py
+WorkingDirectory=/home/pi/easy_sun_system
+ExecStart=/usr/bin/python3 /home/pi/easy_sun_system/app.py
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
